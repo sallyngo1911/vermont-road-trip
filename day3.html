@@ -247,15 +247,18 @@ function routeLines(gj){ var out=[]; if(!gj) return out; var fs=gj.type==="Featu
 function loadRoute(d){
   if(ROUTES.hasOwnProperty(d.id)||!window.fetch||location.protocol.indexOf("http")!==0) return;
   ROUTES[d.id]=null;
-  fetch("routes/day"+d.id+".geojson",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(gj){
-    var ls=routeLines(gj); if(!ls.length) return; ROUTES[d.id]=ls;
+  var paths=["routes/day"+d.id+".geojson","Day"+d.id+".geojson","day"+d.id+".geojson","routes/Day"+d.id+".geojson"];
+  (function tryNext(i){ if(i>=paths.length) return;
+   fetch(paths[i],{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(gj){
+    var ls=routeLines(gj); if(!ls.length){ tryNext(i+1); return } ROUTES[d.id]=ls;
     if(DATA.days[cur].id===d.id){ hero(); drawMap(false); $("vt-mapnote").textContent="Road route from ArcGIS Pro Network Analyst. Basemap by Esri; change the style with the layer button at top right. Tap a numbered stop for its details." }
-  }).catch(function(){});
+  }).catch(function(){ tryNext(i+1) }); })(0);
 }
 function snapshot(d,W,H){
   var pts=d.stops.filter(function(s){return s.Seq}).map(function(s){return merc(s.Latitude,s.Longitude)});
-  var x0=Math.min.apply(null,pts.map(function(p){return p[0]})),x1=Math.max.apply(null,pts.map(function(p){return p[0]}));
-  var y0=Math.min.apply(null,pts.map(function(p){return p[1]})),y1=Math.max.apply(null,pts.map(function(p){return p[1]}));
+  var ext=pts.slice(); (ROUTES[d.id]||[]).forEach(function(L1){ for(var i=0;i<L1.length;i+=10){ ext.push(merc(L1[i][1],L1[i][0])) } });
+  var x0=Math.min.apply(null,ext.map(function(p){return p[0]})),x1=Math.max.apply(null,ext.map(function(p){return p[0]}));
+  var y0=Math.min.apply(null,ext.map(function(p){return p[1]})),y1=Math.max.apply(null,ext.map(function(p){return p[1]}));
   var w=(x1-x0)*1.18+2000,h=(y1-y0)*1.18+2000,cx=(x0+x1)/2,cy=(y0+y1)/2; if(w/h>W/H) h=w*H/W; else w=h*W/H;
   var bb=[cx-w/2,cy-h/2,cx+w/2,cy+h/2];
   var url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox="+bb.map(function(v){return v.toFixed(0)}).join(",")+"&bboxSR=3857&imageSR=3857&size="+W+","+H+"&format=jpg&f=image";
