@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- Road trip app, Day 2 - Sunday, October 4, 2026. Paste this whole file into one Wix 'Embed HTML' box (Embed Code > Embed HTML > Code). -->
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Day 2 - Sunday, October 4, 2026</title></head><body>
+<!-- Road trip app, Day 2 - Sunday, October 4, 2026. Paste this whole file into one page on GitHub Pages. -->
+<html lang="en"><head><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0E1319"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" type="image/png" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Fall Trip 2026"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Day 2 - Sunday, October 4, 2026</title></head><body>
 
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jost:wght@400;500;600&family=Syne:wght@600;700;800&display=swap">
@@ -179,7 +179,7 @@ html,body{margin:0;padding:0;background:#10151C}
   <div class="vt-mapwrap">
     <div class="vt-maphead" id="vt-legend"></div>
     <div class="vt-map" id="vt-map"></div>
-    <div class="vt-mapnote">Basemap by Esri. Change the map style with the layer button at top right. The glowing dotted line joins the stops in visit order; it is not traced along the roads.</div>
+    <div class="vt-mapnote" id="vt-mapnote">Basemap by Esri. Change the map style with the layer button at top right. The glowing dotted line joins the stops in visit order; it is not traced along the roads.</div>
   </div>
   <div class="vt-views">
     <button class="vt-view" data-v="stops" aria-pressed="true">Stops</button>
@@ -241,6 +241,17 @@ var HL=[["all","All"],["eat","Eats"],["trail","Trails"],["view","Views"],["bridg
 function inHL(s){return hl==="all"||kind(s)===hl}
 /* ---- Esri imagery snapshot of the day's area ---- */
 function merc(lat,lon){var R=6378137,x=R*lon*Math.PI/180,y=R*Math.log(Math.tan(Math.PI/4+lat*Math.PI/360));return [x,y]}
+var ROUTES={};
+function routeLines(gj){ var out=[]; if(!gj) return out; var fs=gj.type==="FeatureCollection"?gj.features:(gj.type==="Feature"?[gj]:[{geometry:gj}]);
+  fs.forEach(function(f){var g=f&&f.geometry; if(!g) return; if(g.type==="LineString") out.push(g.coordinates); else if(g.type==="MultiLineString") g.coordinates.forEach(function(c){out.push(c)})}); return out }
+function loadRoute(d){
+  if(ROUTES.hasOwnProperty(d.id)||!window.fetch||location.protocol.indexOf("http")!==0) return;
+  ROUTES[d.id]=null;
+  fetch("routes/day"+d.id+".geojson",{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(gj){
+    var ls=routeLines(gj); if(!ls.length) return; ROUTES[d.id]=ls;
+    if(DATA.days[cur].id===d.id){ hero(); drawMap(false); $("vt-mapnote").textContent="Road route from ArcGIS Pro Network Analyst. Basemap by Esri; change the style with the layer button at top right. Tap a numbered stop for its details." }
+  }).catch(function(){});
+}
 function snapshot(d,W,H){
   var pts=d.stops.filter(function(s){return s.Seq}).map(function(s){return merc(s.Latitude,s.Longitude)});
   var x0=Math.min.apply(null,pts.map(function(p){return p[0]})),x1=Math.max.apply(null,pts.map(function(p){return p[0]}));
@@ -249,7 +260,8 @@ function snapshot(d,W,H){
   var bb=[cx-w/2,cy-h/2,cx+w/2,cy+h/2];
   var url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox="+bb.map(function(v){return v.toFixed(0)}).join(",")+"&bboxSR=3857&imageSR=3857&size="+W+","+H+"&format=jpg&f=image";
   var line=pts.map(function(p){return ((p[0]-bb[0])/w*W).toFixed(1)+","+((bb[3]-p[1])/h*H).toFixed(1)}).join(" ");
-  return {url:url,line:line,pts:pts.map(function(p){return [(p[0]-bb[0])/w*W,(bb[3]-p[1])/h*H]})};
+  var road=(ROUTES[d.id]||[]).map(function(L1){var st=Math.max(1,Math.floor(L1.length/600));return L1.filter(function(_,i){return i%st===0||i===L1.length-1}).map(function(c){var p=merc(c[1],c[0]);return ((p[0]-bb[0])/w*W).toFixed(1)+","+((bb[3]-p[1])/h*H).toFixed(1)}).join(" ")});
+  return {url:url,line:line,road:road,pts:pts.map(function(p){return [(p[0]-bb[0])/w*W,(bb[3]-p[1])/h*H]})};
 }
 function tabs(){
   $("vt-tabs").innerHTML=DATA.days.map(function(d,i){var t=d.title.split(" - ");return '<button class="vt-tab" role="tab" data-i="'+i+'" aria-selected="'+(i===cur)+'">'+esc(t[0])+'<small>'+esc(d.short)+'</small></button>'}).join("");
@@ -264,7 +276,7 @@ function hero(){
   $("vt-avatar").style.backgroundImage="url('"+sn.url.replace("size="+W+","+H,"size=300,300")+"')";
   var c=d.stops.filter(function(x){return x.Seq}), mid=c[Math.floor(c.length/2)];
   $("vt-post").innerHTML='<img src="'+sn.url+'" alt="Esri satellite image of the area for '+esc(h[1])+'" loading="lazy" onerror="this.style.display=\'none\'"><div class="shade"></div>'+
-    '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><polyline points="'+sn.line+'" fill="none" stroke="#E9AE45" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(233,174,69,.9))"/>'+
+    '<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid slice" aria-hidden="true">'+(sn.road.length?sn.road.map(function(r){return '<polyline points="'+r+'" fill="none" stroke="#E9AE45" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(233,174,69,.9))"/>'}).join(""):'<polyline points="'+sn.line+'" fill="none" stroke="#E9AE45" stroke-width="3" stroke-dasharray="2 9" stroke-linecap="round" style="filter:drop-shadow(0 0 4px rgba(233,174,69,.9))"/>')+
     sn.pts.map(function(p,i){return '<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(i===0||i===sn.pts.length-1?7:5)+'" fill="#0E1319" stroke="#E9AE45" stroke-width="2"/>'}).join("")+'</svg>'+
     '<div class="hudtl"><i></i>ESRI WORLD IMAGERY &nbsp;'+Math.abs(mid.Latitude).toFixed(4)+'&deg;N '+Math.abs(mid.Longitude).toFixed(4)+'&deg;W</div>'+
     '<div class="cap"><b>'+esc(h[1])+'</b><span>'+esc(s.start)+' &rarr; '+esc(s.end)+'</span></div>';
@@ -294,7 +306,8 @@ function mcolor(s){var g=group(s); return g==="drive"?"#8CB0C2":g==="optional"?"
 function drawMap(fit){
   if(!map) return; var d=DATA.days[cur]; layers.clearLayers(); markers={};
   var pts=d.stops.filter(function(s){return s.Seq}).map(function(s){return [s.Latitude,s.Longitude]});
-  if(show.stop) L.polyline(pts,{color:"#E9AE45",weight:3,dashArray:"1 9",lineCap:"round",opacity:.95,className:"vt-route"}).addTo(layers);
+  if(show.stop){ if(ROUTES[d.id]) ROUTES[d.id].forEach(function(l){ L.polyline(l.map(function(c){return [c[1],c[0]]}),{color:"#E9AE45",weight:4,opacity:.95,className:"vt-route"}).addTo(layers) });
+    else L.polyline(pts,{color:"#E9AE45",weight:3,dashArray:"1 9",lineCap:"round",opacity:.95,className:"vt-route"}).addTo(layers); }
   d.stops.forEach(function(s){
     var g=group(s); if(!show[g]) return; var m, fade=!inHL(s);
     if(s.Seq){ m=L.marker([s.Latitude,s.Longitude],{opacity:fade?.3:1,icon:L.divIcon({className:"vt-lbl",html:'<span style="background:'+(g==="drive"?"#8CB0C2":"linear-gradient(135deg,#E9AE45,#D9693A)")+'">'+s.Seq+"</span>",iconSize:[26,26],iconAnchor:[13,13]})}) }
@@ -398,10 +411,10 @@ Array.prototype.forEach.call(root.querySelectorAll(".vt-view"),function(b){b.onc
 Array.prototype.forEach.call(root.querySelectorAll(".vt-seg button"),function(b){b.onclick=function(){grouping=b.getAttribute("data-g");Array.prototype.forEach.call(root.querySelectorAll(".vt-seg button"),function(x){x.setAttribute("aria-pressed",x===b)});panel()}});
 $("vt-filter").onchange=function(){filter=this.value;highlights();panel()};
 var lastCols=window.innerWidth<860; window.addEventListener("resize",function(){var c=window.innerWidth<860; if(c!==lastCols){lastCols=c; if(view==="stops") panel()}});
-function render(fit){ open=null; tabs(); hero(); highlights(); summary(); legend(); panel(); drawMap(fit) }
+function render(fit){ open=null; loadRoute(DATA.days[cur]); tabs(); hero(); highlights(); summary(); legend(); panel(); drawMap(fit) }
 render(true);
 (function(){ if(window.L){initMap();return} var sc=document.createElement("script"); sc.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"; sc.onload=initMap; document.head.appendChild(sc) })();
 })();
 </script>
 
-</body></html>
+<script>if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script></body></html>
