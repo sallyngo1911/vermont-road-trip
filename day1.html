@@ -235,8 +235,8 @@ function kind(s){
 function part(s){ if(!s._arr) return null; var h=+s._arr.split(":")[0]; return h<12?"morning":h<15?"midday":h<18?"afternoon":"evening" }
 var PARTS={morning:["Morning","Before noon","sunrise"],midday:["Midday","Noon to 3 PM","sun"],afternoon:["Afternoon","3 to 6 PM","sun"],evening:["Evening","After 6 PM","moon"]};
 var HERO={1:["@whitemountains.day1","White Mountains","Saturday, October 3. Boston to the Kancamagus Highway and Franconia Notch, then dinner and the cabin in Killington."],
- 2:["@woodstock.day2","Woodstock, Vermont","Sunday, October 4. Killington gondola, Plymouth Notch, Woodstock village, farms, apple picking and creemees."],
- 3:["@stowe.day3","Stowe, Vermont","Monday, October 5. Route 100 to Stowe and Smugglers' Notch, then Church Street in Burlington and home."]};
+ 2:["@stowe.day2","Stowe, Vermont","Sunday, October 4. Route 100 north to Waterbury and Stowe: apples, BBQ lunch, the gondola, Smugglers' Notch and fondue, then back to Killington."],
+ 3:["@woodstock.day3","Woodstock, Vermont","Monday, October 5. Killington gondola, Plymouth Notch, Woodstock village and farms, Quechee Gorge at golden hour, then home to Boston."]};
 var HL=[["all","All"],["eat","Eats"],["trail","Trails"],["view","Views"],["bridge","Bridges"],["farm","Farms"],["town","Towns"]];
 function inHL(s){return hl==="all"||kind(s)===hl}
 /* ---- Esri imagery snapshot of the day's area ---- */
