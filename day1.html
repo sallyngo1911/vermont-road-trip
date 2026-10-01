@@ -136,6 +136,36 @@ html,body{margin:0;padding:0;background:#10151C}
 #vtrip .vt-gsec .vt-block dt{font-family:"IBM Plex Mono",monospace;font-size:.76em;color:var(--mustard);margin-top:10px}
 #vtrip .vt-gsec .vt-block dd{margin:2px 0 0;color:var(--muted);font-size:.9em}
 #vtrip .vt-foot{margin-top:30px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-family:"IBM Plex Mono",monospace;font-size:.66em;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+
+/* ---------- drive mode ---------- */
+#vtrip .vt-drivebtn{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:8px 14px;border-radius:10px;background:linear-gradient(135deg,#E9AE45,#D9693A);color:#140F0A;font-family:"IBM Plex Mono",monospace;font-size:1.1em;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+#vtrip .vt-drivebtn svg{width:16px;height:16px}
+#vtrip .vt-mapwrap.vt-driving{position:fixed;inset:0;z-index:99999;margin:0;border-radius:0;padding:0;border:0;background:#0E1319}
+#vtrip .vt-mapwrap.vt-driving .vt-maprow,#vtrip .vt-mapwrap.vt-driving .vt-mapnote{display:none!important}
+#vtrip .vt-driving .leaflet-top{top:calc(96px + env(safe-area-inset-top,0px))}
+#vtrip .vt-driving .leaflet-bottom{bottom:260px}
+#vtrip .vt-mapwrap.vt-driving .vt-map{height:100%!important;border-radius:0}
+#vtrip .vt-dpanel{display:none}
+#vtrip .vt-driving .vt-dpanel{display:block;position:absolute;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:1000;background:rgba(20,27,35,.96);border:1px solid rgba(233,174,69,.45);border-radius:18px;padding:14px 16px 12px;box-shadow:0 10px 40px rgba(0,0,0,.5);backdrop-filter:blur(8px)}
+#vtrip .vt-dturn{display:none}
+#vtrip .vt-driving .vt-dturn.on{display:flex;position:absolute;left:10px;right:10px;top:calc(10px + env(safe-area-inset-top,0px));z-index:1000;align-items:center;gap:14px;background:#1B4D3E;border:1px solid rgba(123,224,138,.45);border-radius:16px;padding:12px 16px;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+#vtrip .vt-dturn .arr{width:46px;height:46px;flex:0 0 auto;border-radius:12px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+#vtrip .vt-dturn .arr svg{width:30px;height:30px}
+#vtrip .vt-dturn b{display:block;font-family:"Syne",sans-serif;font-weight:700;font-size:1.5em;line-height:1.1;color:#fff}
+#vtrip .vt-dturn span{display:block;color:#D9F2DD;font-size:1em;line-height:1.3}
+#vtrip .vt-dlbl{font-family:"IBM Plex Mono",monospace;font-size:.7em;letter-spacing:.12em;text-transform:uppercase;color:var(--mustard)}
+#vtrip .vt-dname{font-family:"Syne",sans-serif;font-weight:700;font-size:1.45em;line-height:1.15;margin:2px 0 6px;color:var(--text)}
+#vtrip .vt-dstats{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 6px}
+#vtrip .vt-dstats div{font-family:"IBM Plex Mono",monospace;font-size:.78em;color:var(--muted)}
+#vtrip .vt-dstats b{display:block;font-family:"Syne",sans-serif;font-size:1.55em;color:var(--text);font-weight:700;letter-spacing:0}
+#vtrip .vt-dstatus{font-family:"IBM Plex Mono",monospace;font-size:.7em;color:var(--muted);margin:0 0 10px;min-height:1.2em}
+#vtrip .vt-dstatus.warn{color:var(--bad)}
+#vtrip .vt-dbtns{display:flex;flex-wrap:wrap;gap:8px}
+#vtrip .vt-dbtns button{flex:1 1 auto;min-height:44px;padding:8px 12px;border-radius:12px;background:var(--card2);border:1px solid var(--line2);color:var(--text);font-size:.9em;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#vtrip .vt-dbtns button svg{width:16px;height:16px}
+#vtrip .vt-dbtns .go{background:linear-gradient(135deg,#E9AE45,#D9693A);color:#140F0A;border:0;font-weight:600;flex:2 1 150px}
+#vtrip .vt-dbtns button[aria-pressed="true"]{border-color:var(--mustard);color:var(--mustard)}
+#vtrip .vt-me{background:none;border:0}
 /* ---------- leaflet ---------- */
 #vtrip .vt-lbl{background:none;border:0}
 #vtrip .vt-lbl span{display:flex;width:26px;height:26px;border-radius:8px;align-items:center;justify-content:center;color:#140F0A;font:500 12px "IBM Plex Mono",monospace;border:1.5px solid #0E1319;box-shadow:0 0 12px rgba(233,174,69,.55)}
@@ -176,8 +206,24 @@ html,body{margin:0;padding:0;background:#10151C}
     <div class="vt-sum" id="vt-sum"></div>
   </div>
   <div class="vt-warn" id="vt-warn"></div>
-  <div class="vt-mapwrap">
-    <div class="vt-maphead" id="vt-legend"></div>
+  <div class="vt-mapwrap" id="vt-mapwrap">
+    <div class="vt-maprow" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><div class="vt-maphead" id="vt-legend"></div><button class="vt-drivebtn" id="vt-drivebtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 21l-8-4-8 4Z"/></svg>Start drive mode</button></div>
+    <div class="vt-dturn" id="vt-dturn" aria-live="polite"><div class="arr" id="vt-darr"></div><div><b id="vt-ddist"></b><span id="vt-dtext"></span></div></div>
+    <div class="vt-dpanel" id="vt-dpanel">
+      <div class="vt-dlbl" id="vt-dlbl">Next stop</div>
+      <div class="vt-dname" id="vt-dname"></div>
+      <div class="vt-dstats"><div><b id="vt-dmiles">-</b>miles left</div><div><b id="vt-deta">-</b>your ETA</div><div><b id="vt-dplan">-</b>planned</div></div>
+      <div class="vt-dstatus" id="vt-dstatus" aria-live="polite">Waiting for GPS...</div>
+      <div class="vt-dbtns">
+        <button class="go" id="vt-dnav" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 20 21l-8-4-8 4Z"/></svg>Navigate in Google Maps</button>
+        <button id="vt-dprev" type="button" aria-label="Previous stop">&#8592; Prev</button>
+        <button id="vt-dnext" type="button" aria-label="Next stop">Next &#8594;</button>
+        <button id="vt-dvoice" type="button" aria-pressed="true">Voice on</button>
+        <button id="vt-dcenter" type="button">Recenter</button>
+        <button id="vt-dsim" type="button" aria-pressed="false">Simulate</button>
+        <button id="vt-dexit" type="button">Exit</button>
+      </div>
+    </div>
     <div class="vt-map" id="vt-map"></div>
     <div class="vt-mapnote" id="vt-mapnote">Basemap by Esri. Change the map style with the layer button at top right. The glowing dotted line joins the stops in visit order; it is not traced along the roads.</div>
   </div>
@@ -251,6 +297,7 @@ function loadRoute(d){
   (function tryNext(i){ if(i>=paths.length) return;
    fetch(paths[i],{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(gj){
     var ls=routeLines(gj); if(!ls.length){ tryNext(i+1); return } ROUTES[d.id]=ls;
+    if(DRV&&DRV.day===d.id) prepDrive();
     if(DATA.days[cur].id===d.id){ hero(); drawMap(false); $("vt-mapnote").textContent="Road route from ArcGIS Pro Network Analyst. Basemap by Esri; change the style with the layer button at top right. Tap a numbered stop for its details." }
   }).catch(function(){ tryNext(i+1) }); })(0);
 }
@@ -317,6 +364,7 @@ function drawMap(fit){
     else { m=L.circleMarker([s.Latitude,s.Longitude],{radius:6,color:"#0E1319",weight:2,fillColor:mcolor(s),fillOpacity:fade?.3:.95}) }
     m.bindPopup(popup(s)); m.on("click",function(){select(s.Stop_ID,true)}); m.addTo(layers); markers[s.Stop_ID]=m;
   });
+  if(typeof DRV!=="undefined"&&DRV&&DRV.me){ DRV.acc.addTo(layers); DRV.me.addTo(layers) }
   if(fit&&pts.length) map.fitBounds(L.latLngBounds(pts),{padding:[30,30]});
 }
 function initMap(){
@@ -414,7 +462,142 @@ Array.prototype.forEach.call(root.querySelectorAll(".vt-view"),function(b){b.onc
 Array.prototype.forEach.call(root.querySelectorAll(".vt-seg button"),function(b){b.onclick=function(){grouping=b.getAttribute("data-g");Array.prototype.forEach.call(root.querySelectorAll(".vt-seg button"),function(x){x.setAttribute("aria-pressed",x===b)});panel()}});
 $("vt-filter").onchange=function(){filter=this.value;highlights();panel()};
 var lastCols=window.innerWidth<860; window.addEventListener("resize",function(){var c=window.innerWidth<860; if(c!==lastCols){lastCols=c; if(view==="stops") panel()}});
-function render(fit){ open=null; loadRoute(DATA.days[cur]); tabs(); hero(); highlights(); summary(); legend(); panel(); drawMap(fit) }
+
+/* ================= DRIVE MODE ================= */
+var DIRS={}, DRV=null;
+function loadDirs(d){
+  if(DIRS.hasOwnProperty(d.id)||!window.fetch||location.protocol.indexOf("http")!==0) return; DIRS[d.id]=null;
+  var paths=["directions_day"+d.id+".geojson","routes/directions_day"+d.id+".geojson","Directions_Day"+d.id+".geojson","routes/Directions_Day"+d.id+".geojson","directions_Day"+d.id+".geojson"];
+  (function tryNext(i){ if(i>=paths.length) return;
+    fetch(paths[i],{cache:"no-cache"}).then(function(r){return r.ok?r.json():null}).then(function(gj){
+      if(!gj||!gj.features){ tryNext(i+1); return }
+      var TX=["DisplayText","Text","DirectionText","Directions","Direction","Instruction","text","Maneuver"], SQ=["Sequence","SEQUENCE","Sequence_","SubItemSequence","ArriveTime","ElaTime","OBJECTID","ObjectID","FID"];
+      var out=[]; gj.features.forEach(function(f,k){ var p=f.properties||{}, tx="", g=f.geometry; if(!g) return;
+        for(var a=0;a<TX.length;a++){ if(p[TX[a]]){ tx=String(p[TX[a]]); break } } if(!tx) return;
+        var c=g.type==="Point"?g.coordinates:g.type==="LineString"?g.coordinates[0]:g.type==="MultiLineString"?g.coordinates[0][0]:g.type==="MultiPoint"?g.coordinates[0]:null; if(!c) return;
+        var sq=k; for(var b=0;b<SQ.length;b++){ if(p[SQ[b]]!==undefined&&p[SQ[b]]!==null&&!isNaN(+p[SQ[b]])){ sq=+p[SQ[b]]; break } }
+        out.push({lat:c[1],lon:c[0],text:tx,sq:sq,k:k}) });
+      out.sort(function(a,b){return a.sq-b.sq||a.k-b.k});
+      out=out.filter(function(m){return !/^(start at|depart|arrive at|finish at|stop at)/i.test(m.text)});
+      if(out.length){ DIRS[d.id]=out; if(DRV&&DRV.day===d.id) prepDrive() } else tryNext(i+1);
+    }).catch(function(){ tryNext(i+1) }); })(0);
+}
+function hav(a,b,c,e){var R=6371000,t=Math.PI/180,x=(c-a)*t,y=(e-b)*t,s=Math.sin(x/2)*Math.sin(x/2)+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)*Math.sin(y/2);return 2*R*Math.asin(Math.sqrt(s))}
+function buildPath(d){
+  var L0=ROUTES[d.id]; if(!L0||!L0.length) return null; var P=[];
+  L0.forEach(function(line){ line.forEach(function(c){ var q=[c[1],c[0]]; if(!P.length||P[P.length-1][0]!==q[0]||P[P.length-1][1]!==q[1]) P.push(q) }) });
+  var cum=[0]; for(var i=1;i<P.length;i++) cum.push(cum[i-1]+hav(P[i-1][0],P[i-1][1],P[i][0],P[i][1]));
+  return {P:P,cum:cum};
+}
+function proj(path,lat,lon,from,to){
+  var P=path.P, k=Math.cos(lat*Math.PI/180)*111320, best={d:1e12,i:0,t:0}, all=[];
+  from=Math.max(0,from|0); to=Math.min(P.length-1,to==null?P.length-1:to);
+  for(var i=from;i<to;i++){ var ax=P[i][1]*k,ay=P[i][0]*110540,bx=P[i+1][1]*k,by=P[i+1][0]*110540,px=lon*k,py=lat*110540;
+    var dx=bx-ax,dy=by-ay,L2=dx*dx+dy*dy,u=L2?((px-ax)*dx+(py-ay)*dy)/L2:0; u=Math.max(0,Math.min(1,u));
+    var ex=ax+u*dx-px,ey=ay+u*dy-py,dd=Math.sqrt(ex*ex+ey*ey); all.push(dd); if(dd<best.d) best={d:dd,i:i,t:u} }
+  for(var j=0;j<all.length;j++){ if(all[j]<=best.d+40){ var ii=from+j; var ax2=P[ii][1]*k,ay2=P[ii][0]*110540,bx2=P[ii+1][1]*k,by2=P[ii+1][0]*110540,px2=lon*k,py2=lat*110540,dx2=bx2-ax2,dy2=by2-ay2,L22=dx2*dx2+dy2*dy2,u2=L22?((px2-ax2)*dx2+(py2-ay2)*dy2)/L22:0; u2=Math.max(0,Math.min(1,u2)); best={d:all[j],i:ii,t:u2}; break } }
+  var seg=path.cum[best.i+1]-path.cum[best.i]; return {pos:path.cum[best.i]+best.t*seg,dist:best.d,i:best.i};
+}
+function prepDrive(){
+  var d=DATA.days[cur]; DRV.stops=d.stops.filter(function(s){return s.Seq}).sort(function(a,b){return a.Seq-b.Seq});
+  DRV.path=buildPath(d); DRV.stopPos=[]; DRV.man=[];
+  if(DRV.path){ var from=0; DRV.stops.forEach(function(s){ var r=proj(DRV.path,s.Latitude,s.Longitude,from,null); DRV.stopPos.push(r.pos); from=Math.max(0,r.i-2) });
+    var dirs=DIRS[d.id]||[], f2=0; dirs.forEach(function(m){ var r=proj(DRV.path,m.lat,m.lon,f2,null); if(r.dist<300){ DRV.man.push({text:m.text,pos:r.pos,lat:m.lat,lon:m.lon,pre:false,now:false}); f2=Math.max(0,r.i-2) } }) }
+}
+function fmtMi(m){var mi=m/1609.34; return mi<0.19?Math.round(m*3.281/50)*50+" ft":(mi<10?mi.toFixed(1):Math.round(mi))+" mi"}
+function sayDist(m){var mi=m/1609.34; return mi<0.19?(Math.round(m*3.281/50)*50)+" feet":mi<1.05&&mi>0.95?"1 mile":(mi<10?mi.toFixed(1):Math.round(mi))+" miles"}
+function hm(dt){var h=dt.getHours(),m=dt.getMinutes();return ((h%12)||12)+":"+String(m).padStart(2,"0")+(h<12?" AM":" PM")}
+function say(txt){ try{ if(!DRV||!DRV.voice||!window.speechSynthesis) return; var u=new SpeechSynthesisUtterance(txt); u.lang="en-US"; u.rate=1; window.speechSynthesis.speak(u) }catch(e){} }
+function arrowSvg(tx){ var s=tx.toLowerCase(), p='<path d="M12 20V5M6 11l6-6 6 6"/>';
+  if(/u-turn|make a u/.test(s)) p='<path d="M8 20V9a4 4 0 0 1 8 0v6M12 12l4 4 4-4"/>';
+  else if(/sharp left|turn left|bear left|keep left|slight left|left onto|left on|exit left/.test(s)) p='<path d="M16 20v-7a3 3 0 0 0-3-3H5M9 6l-4 4 4 4"/>';
+  else if(/sharp right|turn right|bear right|keep right|slight right|right onto|right on|exit right|take ramp|take the ramp|exit/.test(s)) p='<path d="M8 20v-7a3 3 0 0 1 3-3h8M15 6l4 4-4 4"/>';
+  else if(/roundabout|rotary/.test(s)) p='<circle cx="12" cy="10" r="4"/><path d="M12 14v7M16 10h4"/>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>' }
+function wake(on){ try{ if(on&&navigator.wakeLock){ navigator.wakeLock.request("screen").then(function(l){DRV&&(DRV.lock=l)}).catch(function(){}) } else if(!on&&DRV&&DRV.lock){ DRV.lock.release(); DRV.lock=null } }catch(e){} }
+document.addEventListener("visibilitychange",function(){ if(DRV&&document.visibilityState==="visible") wake(true) });
+function startDrive(){
+  if(!map){ initMap(); if(!map){ setTimeout(startDrive,600); return } }
+  var d=DATA.days[cur]; DRV={day:d.id,next:1,voice:true,follow:true,arrived:false,flags:{},speeds:[],sim:null,watch:null,pos:null,lastIdx:null};
+  loadDirs(d); prepDrive();
+  var w=$("vt-mapwrap"); w.classList.add("vt-driving"); setTimeout(function(){map.invalidateSize();},60);
+  map.on("dragstart",onDrag); wake(true);
+  say("Drive mode on. "+(DATA.days[cur].title.split(" - ")[1]||""));
+  showStop(); announceStop(true);
+  if(navigator.geolocation){ DRV.watch=navigator.geolocation.watchPosition(function(p){ if(!DRV||DRV.sim) return; onPos(p.coords.latitude,p.coords.longitude,p.coords.accuracy,p.coords.speed) },
+      function(e){ setStatus("GPS not available ("+(e.message||"permission denied")+"). Use Simulate to try it, or Navigate for Google Maps.",true) },{enableHighAccuracy:true,maximumAge:2000,timeout:20000}) }
+  else setStatus("This browser has no GPS access. Open the installed app or the GitHub page on your phone.",true);
+}
+function onDrag(){ if(DRV) DRV.follow=false }
+function stopDrive(){
+  if(!DRV) return; if(DRV.watch!=null&&navigator.geolocation) navigator.geolocation.clearWatch(DRV.watch); if(DRV.sim) clearInterval(DRV.sim);
+  try{window.speechSynthesis&&window.speechSynthesis.cancel()}catch(e){} wake(false);
+  if(DRV.me){ layers.removeLayer(DRV.me); layers.removeLayer(DRV.acc) } map.off("dragstart",onDrag);
+  DRV=null; $("vt-mapwrap").classList.remove("vt-driving"); $("vt-dturn").classList.remove("on"); setTimeout(function(){map.invalidateSize(); drawMap(true)},60);
+}
+function setStatus(t,warn){ var e=$("vt-dstatus"); e.textContent=t; e.className="vt-dstatus"+(warn?" warn":"") }
+function curStop(){ return DRV.stops[Math.min(DRV.next,DRV.stops.length-1)] }
+function showStop(){
+  var s=curStop(), last=DRV.next>=DRV.stops.length-1;
+  $("vt-dlbl").textContent=(last?"Final stop":"Next stop")+" / "+DRV.next+" of "+(DRV.stops.length-1);
+  $("vt-dname").textContent=s.Name; $("vt-dplan").textContent=s.Arrive||"-";
+  var m=markers[s.Stop_ID]; if(m&&!DRV.pos){ map.setView([s.Latitude,s.Longitude],Math.max(map.getZoom(),12)) }
+}
+function announceStop(first){ var s=curStop(); var r=remain(); say((DRV.next>=DRV.stops.length-1?"Final stop, ":"Next stop, ")+s.Name+(r!=null?", in "+sayDist(r):"")+(s.Arrive?". Planned arrival "+s.Arrive:"")+".") }
+function remain(){ if(!DRV.pos) return null; var s=curStop();
+  if(DRV.path&&DRV.cur&&!DRV.cur.off) return Math.max(0,DRV.stopPos[DRV.next]-DRV.cur.pos);
+  return hav(DRV.pos[0],DRV.pos[1],s.Latitude,s.Longitude)*1.25 }
+function onPos(lat,lon,acc,spd){
+  DRV.pos=[lat,lon];
+  if(!DRV.me){ DRV.acc=L.circle([lat,lon],{radius:acc||30,color:"#4AA3FF",weight:1,fillColor:"#4AA3FF",fillOpacity:.12}).addTo(layers);
+    DRV.me=L.circleMarker([lat,lon],{radius:9,color:"#fff",weight:3,fillColor:"#2F8BFF",fillOpacity:1}).addTo(layers) }
+  DRV.me.setLatLng([lat,lon]); DRV.acc.setLatLng([lat,lon]).setRadius(acc||30);
+  if(DRV.follow) map.setView([lat,lon],Math.max(map.getZoom(),15),{animate:true});
+  var now=Date.now(); if(spd!=null&&spd>=0) DRV.speeds.push([now,spd]); DRV.speeds=DRV.speeds.filter(function(x){return now-x[0]<90000});
+  if(DRV.path){ var a=DRV.lastIdx==null?Math.max(0,(DRV.next>0?Math.floor(nearIdx(DRV.stopPos[DRV.next-1])):0)-40):DRV.lastIdx-30, b=DRV.lastIdx==null?null:DRV.lastIdx+700;
+    var r=proj(DRV.path,lat,lon,a,b); if(r.dist>300&&DRV.lastIdx!=null) r=proj(DRV.path,lat,lon,0,null);
+    DRV.cur={pos:r.pos,off:r.dist>400}; if(!DRV.cur.off) DRV.lastIdx=r.i }
+  var s=curStop(), dS=hav(lat,lon,s.Latitude,s.Longitude), rem=remain();
+  var avg=DRV.speeds.length?DRV.speeds.reduce(function(t,x){return t+x[1]},0)/DRV.speeds.length:0; if(avg<4) avg=17.9;
+  $("vt-dmiles").textContent=rem!=null?(rem/1609.34<10?(rem/1609.34).toFixed(1):Math.round(rem/1609.34)):"-";
+  $("vt-deta").textContent=rem!=null?hm(new Date(now+rem/avg*1000)):"-";
+  setStatus(DRV.cur&&DRV.cur.off?"Off the planned route. Distance is approximate; tap Navigate for Google Maps.":(DRV.sim?"Simulating the drive":"GPS "+Math.round(acc||0)+" m")+(DRV.arrived?" / arrived at "+s.Name:""),DRV.cur&&DRV.cur.off);
+  var key="s"+DRV.next;
+  if(!DRV.arrived){
+    if(rem!=null&&rem<1700&&rem>350&&!DRV.flags[key+"1"]){ DRV.flags[key+"1"]=1; say("In "+sayDist(rem)+", "+s.Name+".") }
+    if(dS<150){ DRV.arrived=true; say((DRV.next>=DRV.stops.length-1?"You have arrived at ":"Arriving at ")+s.Name+"."); highlightDrive(s) }
+  } else if(dS>300&&DRV.next<DRV.stops.length-1){ DRV.next++; DRV.arrived=false; showStop(); announceStop() }
+  turns();
+}
+function nearIdx(pos){ var c=DRV.path.cum,lo=0,hi=c.length-1; while(lo<hi){var m=(lo+hi)>>1; if(c[m]<pos) lo=m+1; else hi=m} return lo }
+function turns(){
+  var box=$("vt-dturn"); if(!DRV.man.length||!DRV.cur||DRV.cur.off){ box.classList.remove("on"); return }
+  var nx=null; for(var i=0;i<DRV.man.length;i++){ if(DRV.man[i].pos>DRV.cur.pos+8){ nx=DRV.man[i]; break } }
+  if(!nx){ box.classList.remove("on"); return }
+  var dm=nx.pos-DRV.cur.pos; box.classList.add("on"); $("vt-darr").innerHTML=arrowSvg(nx.text); $("vt-ddist").textContent=fmtMi(dm); $("vt-dtext").textContent=nx.text;
+  if(dm<520&&dm>130&&!nx.pre){ nx.pre=true; say("In "+sayDist(dm)+", "+nx.text) }
+  if(dm<=70&&!nx.now){ nx.now=true; nx.pre=true; say(nx.text) }
+}
+function highlightDrive(s){ var m=markers[s.Stop_ID]; if(m) m.openPopup() }
+function toggleSim(){
+  if(DRV.sim){ clearInterval(DRV.sim); DRV.sim=null; $("vt-dsim").setAttribute("aria-pressed","false"); setStatus("Simulation stopped. Waiting for GPS..."); return }
+  if(!DRV.path){ setStatus("Simulate needs the road route file (dayN.geojson) on GitHub.",true); return }
+  $("vt-dsim").setAttribute("aria-pressed","true"); DRV.follow=true;
+  var start=DRV.next>0?DRV.stopPos[DRV.next-1]:0, pos=start, P=DRV.path.P, C=DRV.path.cum;
+  DRV.sim=setInterval(function(){ pos+=260; if(pos>=C[C.length-1]){ clearInterval(DRV.sim); DRV.sim=null; return }
+    var i=nearIdx(pos); i=Math.max(1,i); var f=(pos-C[i-1])/((C[i]-C[i-1])||1), lat=P[i-1][0]+(P[i][0]-P[i-1][0])*f, lon=P[i-1][1]+(P[i][1]-P[i-1][1])*f;
+    onPos(lat,lon,10,26) },1000);
+}
+$("vt-drivebtn").onclick=function(){ startDrive() };
+$("vt-dexit").onclick=function(){ stopDrive() };
+$("vt-dnext").onclick=function(){ if(DRV&&DRV.next<DRV.stops.length-1){ DRV.next++; DRV.arrived=false; showStop(); announceStop(); DRV.pos&&onPos(DRV.pos[0],DRV.pos[1],10,null) } };
+$("vt-dprev").onclick=function(){ if(DRV&&DRV.next>1){ DRV.next--; DRV.arrived=false; showStop(); announceStop(); DRV.pos&&onPos(DRV.pos[0],DRV.pos[1],10,null) } };
+$("vt-dvoice").onclick=function(){ if(!DRV) return; DRV.voice=!DRV.voice; this.setAttribute("aria-pressed",DRV.voice); this.textContent=DRV.voice?"Voice on":"Voice off"; if(!DRV.voice) try{speechSynthesis.cancel()}catch(e){} };
+$("vt-dcenter").onclick=function(){ if(!DRV) return; DRV.follow=true; if(DRV.pos) map.setView(DRV.pos,Math.max(map.getZoom(),15)) };
+$("vt-dsim").onclick=function(){ if(DRV) toggleSim() };
+$("vt-dnav").onclick=function(){ if(!DRV) return; var s=curStop(); window.open("https://www.google.com/maps/dir/?api=1&destination="+s.Latitude+","+s.Longitude+"&travelmode=driving&dir_action=navigate","_blank") };
+
+function render(fit){ if(DRV) stopDrive(); open=null; loadRoute(DATA.days[cur]); loadDirs(DATA.days[cur]); tabs(); hero(); highlights(); summary(); legend(); panel(); drawMap(fit) }
 render(true);
 (function(){ if(window.L){initMap();return} var sc=document.createElement("script"); sc.src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"; sc.onload=initMap; document.head.appendChild(sc) })();
 })();
